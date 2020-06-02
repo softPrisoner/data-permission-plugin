@@ -8,6 +8,7 @@ import com.rainbow.datapermission.plugin.object.ConstraintTypeObject;
 import com.rainbow.datapermission.plugin.object.TableName;
 import com.rainbow.datapermission.plugin.register.Register;
 import com.rainbow.datapermission.plugin.utils.FormatUtil;
+import com.rainbow.datapermission.plugin.utils.SQLUtil;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -15,6 +16,7 @@ import java.util.regex.Pattern;
 
 import static com.rainbow.datapermission.plugin.utils.SQLUtil.*;
 import static java.util.regex.Pattern.compile;
+import static java.util.stream.Collectors.toList;
 
 /**
  * @author wabslygzj@163.com (Tony Li)
@@ -31,8 +33,13 @@ public class ParserDelegate {
         this.executor = executor;
     }
 
-    public String divide(String sql, Map<String, String> params) {
+    public String divide(String sql, Map<String, String> params, String[] ignoreChildren, String[] ignoreParams) {
         Map<String, String> map = new HashMap<>(16);
+        //support personalized configuration which point the SQL need to ignore
+        if (SQLUtil.isIgnoreChildren(ignoreChildren, sql)) {
+            return sql;
+        }
+
         String lowerCaseSql = FormatUtil.toLowerCase(sql);
         Pattern pattern = compile("\\(\\s*select");
         Matcher matcher = pattern.matcher(lowerCaseSql);
@@ -61,21 +68,21 @@ public class ParserDelegate {
 
                         if (matchMatcher.find()) {
                             sql = sql.replace(temp, VIRTUAL_T + i);
-                            map.put(VIRTUAL_T + i, divide(temp, params));
+                            map.put(VIRTUAL_T + i, divide(temp, params, ignoreChildren, ignoreParams));
                         }
                     }
                 }
             }
         }
 
-        sql = collectFragment(sql, params);
+        sql = collectFragment(sql, params, ignoreParams);
         for (String key : map.keySet()) {
             sql = sql.replace(key, map.get(key));
         }
         return sql;
     }
 
-    public String collectFragment(String sql, Map<String, String> params) {
+    public String collectFragment(String sql, Map<String, String> params, String[] ignoreParams) {
         List<ConcatBodyObject> fragmentList = new ArrayList<ConcatBodyObject>();
 
         List<TableName> tableNameList = lookUpTableNames(sql);
@@ -114,6 +121,8 @@ public class ParserDelegate {
                 }
             }
         });
-        return aggregate(sql, fragmentList);
+        List<ConcatBodyObject> filterFragmentList = fragmentList.parallelStream()
+                .filter(fragment -> !isIgnoreParams(ignoreParams, fragment)).collect(toList());
+        return aggregate(sql, filterFragmentList);
     }
 }

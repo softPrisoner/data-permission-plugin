@@ -19,8 +19,8 @@ public class SelectParser implements Parser {
     }
 
     @Override
-    public String parse(String sql, Map<String, String> params)
+    public String parse(String sql, final Map<String, String> params, String[] ignoreChildren, String[] ignoreParams)
             throws Exception {
-        return process(delegate.divide(sql, params));
+        return process(delegate.divide(sql, params, ignoreChildren, ignoreParams));
     }
 }

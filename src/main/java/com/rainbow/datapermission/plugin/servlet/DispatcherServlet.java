@@ -6,6 +6,7 @@ import com.rainbow.datapermission.plugin.exception.UnRegisterException;
 import com.rainbow.datapermission.plugin.parser.Parser;
 import com.rainbow.datapermission.plugin.register.Register;
 import com.rainbow.datapermission.plugin.request.SQLRequest;
+import com.rainbow.datapermission.plugin.utils.FormatUtil;
 import com.rainbow.datapermission.plugin.utils.SQLUtil;
 
 import java.util.Map;
@@ -33,6 +34,8 @@ public class DispatcherServlet implements Servlet {
 
         String sql = request.getSql();
         Map<String, String> params = request.getParams();
+        String[] ignoreChildren = request.getIgnoreChildren();
+        String[] ignoreParams = request.getIgnoreParams();
 
         try {
             SQLUtils.parseStatements(sql, MYSQL);
@@ -48,6 +51,7 @@ public class DispatcherServlet implements Servlet {
             throw new SQLParserNotFoundException("No parser found");
         }
 
-        return parser.parse(sql, params);
+        return parser.parse(sql, params, FormatUtil.formatIgnoreChildren(ignoreChildren),
+                FormatUtil.formatIgnoreParams(ignoreParams));
     }
 }

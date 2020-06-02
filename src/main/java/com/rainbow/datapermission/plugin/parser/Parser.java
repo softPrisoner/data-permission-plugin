@@ -9,5 +9,5 @@ import java.util.Map;
  * @description
  */
 public interface Parser {
-    String parse(String sql, final Map<String, String> params) throws Exception;
+    String parse(String sql, final Map<String, String> params, String[] ignoreChildren, String[] ignoreParams) throws Exception;
 }

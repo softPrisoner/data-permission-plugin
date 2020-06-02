@@ -46,6 +46,7 @@ public final class SQLUtil {
         List<TableName> tableNameList = new ArrayList<TableName>();
         List<SQLStatement> stmtList = SQLUtils.parseStatements(sql, JdbcConstants.MYSQL);
         ExportTableAliasVisitor visitor = new ExportTableAliasVisitor(tableNameList);
+
         for (SQLStatement stmt : stmtList) {
             stmt.accept(visitor);
         }
@@ -106,20 +107,8 @@ public final class SQLUtil {
         if (selectIndex < 0 || fromIndex < 0) {
             return null;
         }
-//        String[] paramsArr = body.split(COMMA);
-//        List<String> paramsList = Arrays.asList(paramsArr).parallelStream()
-//                .map(param -> clearAsFromParam(param).trim()).collect(toList());
+
         return sql.substring(selectIndex + 6, fromIndex);
-    }
-
-    private static String clearAsFromParam(String sqlParam) {
-
-        int asIndex = sqlParam.indexOf(BLANK_SPACE + AS + BLANK_SPACE);
-
-        if (asIndex == -1) {
-            return sqlParam;
-        }
-        return sqlParam.substring(0, asIndex);
     }
 
     private static String supply(String sql, String resultParams, List<ConcatBodyObject> fragmentList) {
@@ -131,6 +120,7 @@ public final class SQLUtil {
             String tableName = fragment.getTableName();
             String fieldName = fragment.getFieldName();
             String alias = fragment.getAlias();
+            //TODO Bug fix
             if (resultParams.contains(fieldName) ||
                     resultParams.contains(alias + ALIAS_DOT + SQL_ALL) ||
                     (tableName.equals(alias) && resultParams.contains(SQL_ALL))) {
@@ -185,5 +175,35 @@ public final class SQLUtil {
         final int startIndex = 0;
         final int keyLengthIndex = 6;
         return sql.substring(startIndex, keyLengthIndex).toLowerCase();
+    }
+
+    public static boolean isIgnoreChildren(String[] ignoreChildren, String sql) {
+        String formatSql = SQLUtils.format(sql, MYSQL);
+        for (String children : ignoreChildren) {
+            if (formatSql.equals(children)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean isIgnoreParams(String[] ignoreParams, ConcatBodyObject concatBodyObject) {
+        String fieldName = concatBodyObject.getFieldName();
+        String tableName = concatBodyObject.getTableName();
+        String body = concatBodyObject.getBody();
+
+        for (String param : ignoreParams) {
+            String[] splitParams = param.split("\\|");
+            //Not right format
+            if (splitParams.length != 2) {
+                continue;
+            }
+            String paramTableName = splitParams[0].trim();
+            String paramFieldName = splitParams[1].trim();
+            if (tableName.equals(paramTableName) && fieldName.equals(paramFieldName)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
