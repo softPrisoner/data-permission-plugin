@@ -5,7 +5,6 @@ import java.io.Serializable;
 /**
  * @author wabslygzj@163.com (Tony Li)
  * @copyright rainbow
- * @description ConcatBody
  */
 public class ConcatBodyObject implements Serializable {
 

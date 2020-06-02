@@ -5,7 +5,6 @@ import com.rainbow.datapermission.plugin.concat.SQLConcat;
 /**
  * @author wabslygzj@163.com (Tony Li)
  * @copyright rainbow
- * @description
  */
 public final class BaseConcatRegister extends AbstractSQLConcatRegister {
     private BaseConcatRegister() {

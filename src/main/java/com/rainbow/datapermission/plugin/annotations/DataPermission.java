@@ -10,9 +10,13 @@ import java.lang.annotation.*;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface DataPermission {
+    //method name
+    String method() default "";
+
     //Set ignore children
     String[] ignoreChildren() default {};
 
     //Set ignore params
     String[] ignoreParams() default {};
 }
+

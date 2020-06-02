@@ -3,7 +3,6 @@ package com.rainbow.datapermission.plugin.enums;
 /**
  * @author wabslygzj@163.com (Tony Li)
  * @copyright rainbow
- * @description
  */
 public enum SQLTypeEnum {
     /**

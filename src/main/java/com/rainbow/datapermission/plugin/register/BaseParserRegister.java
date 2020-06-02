@@ -5,7 +5,6 @@ import com.rainbow.datapermission.plugin.parser.Parser;
 /**
  * @author wabslygzj@163.com (Tony Li)
  * @copyright rainbow
- * @description
  */
 public final class BaseParserRegister extends AbstractSQLParserRegister {
 

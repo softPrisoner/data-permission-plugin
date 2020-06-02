@@ -33,10 +33,13 @@ public final class SQLUtil {
 
     public static final String COMMA = ",";
     public static final String ALIAS_DOT = ".";
+
     public static final String LEFT_SINGLE_QUOTE = "'";
     public static final String RIGHT_SINGLE_QUOTE = "'";
+
     public static final String LEFT_BRACKET = "(";
     public static final String RIGHT_BRACKET = ")";
+
     public static final char LEFT_BRACKET_CHAR = '(';
     public static final char RIGHT_BRACKET_CHAR = ')';
 
@@ -120,7 +123,7 @@ public final class SQLUtil {
             String tableName = fragment.getTableName();
             String fieldName = fragment.getFieldName();
             String alias = fragment.getAlias();
-            //TODO Bug fix
+
             if (resultParams.contains(fieldName) ||
                     resultParams.contains(alias + ALIAS_DOT + SQL_ALL) ||
                     (tableName.equals(alias) && resultParams.contains(SQL_ALL))) {
@@ -132,8 +135,8 @@ public final class SQLUtil {
 
 
     public static String aggregateSqlByAlias(String sql, String alias, String fragment) {
-
-        String pattern = "(" + alias + "\\s*\\.\\s*\\w+\\s*=)";
+        //  2020-06-02
+        String pattern = "(" + alias + "\\s*\\.\\s*\\w+\\s*(=|in|IN))";
         Pattern pat = Pattern.compile(pattern);
         Matcher matcher = pat.matcher(sql);
 
@@ -190,14 +193,14 @@ public final class SQLUtil {
     public static boolean isIgnoreParams(String[] ignoreParams, ConcatBodyObject concatBodyObject) {
         String fieldName = concatBodyObject.getFieldName();
         String tableName = concatBodyObject.getTableName();
-        String body = concatBodyObject.getBody();
 
         for (String param : ignoreParams) {
             String[] splitParams = param.split("\\|");
-            //Not right format
+            //Illegal format
             if (splitParams.length != 2) {
                 continue;
             }
+
             String paramTableName = splitParams[0].trim();
             String paramFieldName = splitParams[1].trim();
             if (tableName.equals(paramTableName) && fieldName.equals(paramFieldName)) {
