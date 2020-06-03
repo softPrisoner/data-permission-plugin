@@ -87,9 +87,9 @@ public final class SQLUtil {
                 int index = matcherOfWhere.start();
                 String prefix = sql.substring(0, index - 1);
                 String suffix = sql.substring(index - 1);
-                sql = prefix + WHERE + BLANK_SPACE + fragmentSql + BLANK_SPACE + suffix + BLANK_SPACE;
+                sql = prefix + BLANK_SPACE+ WHERE + BLANK_SPACE + fragmentSql + BLANK_SPACE + suffix + BLANK_SPACE;
             } else {
-                sql = sql + WHERE + fragmentSql;
+                sql = sql + BLANK_SPACE+ WHERE+ BLANK_SPACE + fragmentSql;
             }
         } else {
             final int whereLength = 5;
@@ -183,7 +183,7 @@ public final class SQLUtil {
     public static boolean isIgnoreChildren(String[] ignoreChildren, String sql) {
         String formatSql = SQLUtils.format(sql, MYSQL);
         for (String children : ignoreChildren) {
-            if (formatSql.equals(children)) {
+            if (formatSql.equals(SQLUtils.format(children,MYSQL))){
                 return true;
             }
         }

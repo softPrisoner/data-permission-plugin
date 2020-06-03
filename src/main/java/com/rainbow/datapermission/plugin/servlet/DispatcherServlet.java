@@ -51,7 +51,6 @@ public class DispatcherServlet implements Servlet {
             throw new SQLParserNotFoundException("No parser found");
         }
 
-        return parser.parse(sql, params, FormatUtil.formatIgnoreChildren(ignoreChildren),
-                FormatUtil.formatIgnoreParams(ignoreParams));
+        return parser.parse(sql, params,ignoreChildren,ignoreParams);
     }
 }
